@@ -1,15 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:movie/custom/style.dart';
+import 'package:movie/models/movie.dart';
 import 'package:movie/pages/movie_detail.dart';
 import 'package:movie/viewmodels/movie_view_model.dart';
 
+
+
 class MovieList extends StatelessWidget {
+
   final List<MovieViewModel> movies;
   final String type;
 
   MovieList({this.movies, this.type});
-
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -17,16 +20,11 @@ class MovieList extends StatelessWidget {
       itemBuilder: (context, index) {
         final movie = this.movies[index];
 
-        return new Column(
-          children: <Widget>[
-            (index != 0)
-                ? new Divider(
-                    color: Colors.black12,
-                    thickness: 2.0,
-                  )
-                : new Container(),
-            (type == null || type.trim() == "")
-                ? Card(
+        return (this.type == null || this.type.trim() == "")
+            ? new Column(
+                children: <Widget>[
+
+                  Card(
                     color: Style.primaryswatch,
                     elevation: 0.0,
                     child: new InkWell(
@@ -85,13 +83,22 @@ class MovieList extends StatelessWidget {
                         ],
                       ),
                     ),
+                  ),
+                  (index != 0)
+                      ? new Divider(
+                    color: Colors.black12,
+                    thickness: 2.0,
                   )
-                : (this
-                        .movies[index]
-                        .title
-                        .toLowerCase()
-                        .contains(type.toLowerCase()))
-                    ? Card(
+                      : new Container(),
+                ],
+              )
+            : (this.movies[index]
+                    .title
+                    .toLowerCase()
+                    .contains(this.type.toLowerCase()))
+                ? new Column(
+                    children: <Widget>[
+                      Card(
                         color: Style.primaryswatch,
                         elevation: 0.0,
                         child: new InkWell(
@@ -150,10 +157,16 @@ class MovieList extends StatelessWidget {
                             ],
                           ),
                         ),
+                      ),
+                      (index != 0)
+                          ? new Divider(
+                        color: Colors.black12,
+                        thickness: 2.0,
                       )
-                    : new Container()
-          ],
-        );
+                          : new Container(),
+                    ],
+                  )
+                : new Container();
       },
     );
   }
