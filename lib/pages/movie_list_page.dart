@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:movie/custom/customdialog.dart';
 import 'package:movie/custom/style.dart';
 import 'package:movie/viewmodels/movie_list_view_model.dart';
+import 'package:movie/viewmodels/movie_view_model.dart';
 import 'package:movie/widgets/movie_list.dart';
 import 'package:provider/provider.dart';
 
@@ -37,9 +38,7 @@ class _MovieListPageState extends State<MovieListPage>
     super.initState();
     loading();
     _controller.addListener(() {
-      setState(() {
-        filter = _controller.text;
-      });
+      setState(() {});
     });
     // you can uncomment this to get all batman movies when the page is loaded
     //Provider.of<MovieListViewModel>(context, listen: false).fetchMovies("batman");
@@ -59,9 +58,10 @@ class _MovieListPageState extends State<MovieListPage>
     );
     await Future.delayed(Duration(milliseconds: 1000));
     vm = await Provider.of<MovieListViewModel>(context);
-    vm.fetchMovies(widget.type);
+    await vm.fetchMovies(widget.type);
     await Future.delayed(Duration(milliseconds: 1000));
     setState(() {});
+
     Navigator.of(context, rootNavigator: false).pop();
     return null;
   }
@@ -77,7 +77,7 @@ class _MovieListPageState extends State<MovieListPage>
     await Future.delayed(Duration(seconds: 2));
     vm = Provider.of<MovieListViewModel>(context);
     //vm.fetchMovies(widget.type);
-    vm.fetchMovies(widget.type);
+    await vm.fetchMovies(widget.type);
     await Future.delayed(Duration(milliseconds: 1000));
     setState(() {});
     Navigator.of(context, rootNavigator: false).pop();
@@ -100,7 +100,10 @@ class _MovieListPageState extends State<MovieListPage>
             child: Column(children: <Widget>[
               Expanded(
                   child: (vm != null)
-                      ? MovieList(movies: vm.movies, type: _controller.text)
+                      ? MovieList(
+                          movies: vm.movies,
+                          type: _controller.text,
+                          press: deleteRecord)
                       : new Container())
             ])),
         onRefresh: refreshList,
@@ -135,6 +138,12 @@ class _MovieListPageState extends State<MovieListPage>
             ),
           ),
         ));
+  }
+
+  deleteRecord(int index) {
+    //  print('Index data '+index.toString());
+    vm.movies.removeAt(index);
+    setState(() {});
   }
 
   void _handleSearchEnd() {
